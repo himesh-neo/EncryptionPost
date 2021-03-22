@@ -16,10 +16,13 @@ async function postData(url = '', data = {}) {
   }
 
   const encryptionKey = 'test';
-  const encryptedData = encryptDecrypt.encrypt('SWITCH_ON',encryptionKey);
+  const commandToEncrypt = 'SWITCH_ON';
+  const reqURL = "http://localhost:3000/encryptTest";
+
+  const encryptedData = encryptDecrypt.encrypt(commandToEncrypt,encryptionKey);
   console.log("EncryptedData : ", encryptedData);
 
-  postData('http://localhost:3000/encryptTest', encryptedData)
+  postData(reqURL, encryptedData)
     .then(data => {
       console.log("Success.");
     })
