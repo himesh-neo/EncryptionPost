@@ -13,5 +13,5 @@ npm start
 node postScript.js
 
  - This command will send an encrypted post request.
- - If anyone wants to send post request to another url then open 'postScript.js' file and update the  value to '<YOUR SERVER URL>/encryptTest' for 'reqURL' variable. (Defalut this will run on 'http://localhost:3000/encryptTest')
+ - If anyone wants to send post request to another url then open 'postScript.js' file and update the  value to "(your host url)/encryptTest" for 'reqURL' variable. (Defalut this will run on 'http://localhost:3000/encryptTest')
  - Same, update other variable values(i.e. encryptionKey, commandToEncrypt) as require in file 'postScript.js'.
