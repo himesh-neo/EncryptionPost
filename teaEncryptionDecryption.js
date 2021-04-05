@@ -103,8 +103,8 @@ Tea.longsToStr = function(l) { // convert array of longs back to string
 /*    note: depends on Utf8 class                                                                 */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-let Base64 = {}; // Base64 namespace
-Base64.code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+/* let Base64 = {}; // Base64 namespace
+Base64.code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="; */
 
 /**
  * Encode string into Base64, as defined by RFC 4648 [http://tools.ietf.org/html/rfc4648]
@@ -115,7 +115,7 @@ Base64.code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=
  *   to UTF8 before conversion to base64; otherwise string is assumed to be 8-bit characters
  * @returns {String} Base64-encoded string
  */
-Base64.encode = function(str, utf8encode) { // http://tools.ietf.org/html/rfc4648
+/* Base64.encode = function(str, utf8encode) { // http://tools.ietf.org/html/rfc4648
     utf8encode = (typeof utf8encode == 'undefined') ? false : utf8encode;
     let o1, o2, o3, bits, h1, h2, h3, h4, e = [],
         pad = '',
@@ -150,8 +150,20 @@ Base64.encode = function(str, utf8encode) { // http://tools.ietf.org/html/rfc464
     coded = e.join(''); // join() is far faster than repeated string concatenation in IE
     // replace 'A's from padded nulls with '='s
     coded = coded.slice(0, coded.length - pad.length) + pad;
-
+   // console.log(" coded-- ", coded);
     return coded;
+} */
+hexEncode = function(str, utf8encode){
+    var hex, i;
+    utf8encode = (typeof utf8encode == 'undefined') ? false : utf8encode;
+    var result = "";
+    plain = utf8encode ? Utf8.encode(str) : str;
+    for (i=0; i<plain.length; i++) {
+        hex = plain.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4);
+    }
+
+    return result
 }
 
 /**
@@ -163,7 +175,7 @@ Base64.encode = function(str, utf8encode) { // http://tools.ietf.org/html/rfc464
  *   from UTF8 after conversion from base64
  * @returns {String} decoded string
  */
-Base64.decode = function(str, utf8decode) {
+/* Base64.decode = function(str, utf8decode) {
     utf8decode = (typeof utf8decode == 'undefined') ? false : utf8decode;
     let o1, o2, o3, h1, h2, h3, h4, bits, d = [],
         plain, coded;
@@ -191,6 +203,17 @@ Base64.decode = function(str, utf8decode) {
     }
     plain = d.join(''); // join() is far faster than repeated string concatenation in IE
     return utf8decode ? Utf8.decode(plain) : plain;
+} */
+hexDecode = function(encoded, utf8decode){
+    utf8decode = (typeof utf8decode == 'undefined') ? false : utf8decode;
+    var j;
+    coded = utf8decode ? Utf8.decode(encoded) : encoded;
+    var hexes = coded.match(/.{1,4}/g) || [];
+    var back = "";
+    for(j = 0; j<hexes.length; j++) {
+        back += String.fromCharCode(parseInt(hexes[j], 16));
+    }
+    return utf8decode ? Utf8.decode(back) : back;
 }
 
 /*
@@ -230,10 +253,10 @@ const encrypt = (plaintext, password) =>{
     // ---- </TEA> ----
     let ciphertext = Tea.longsToStr(v);
 
-    return Base64.encode(ciphertext);
+    return hexEncode(ciphertext);
 }
-// const test = { temp1: 'temp1', temp2: 'temp2'}
-// console.info(encrypt(JSON.stringify(test),"test"));
+//const test = { temp1: 'temp1', temp2: 'temp2'}
+console.info(encrypt("Hello there...!","test"));
 /*
  * decrypt text using Corrected Block TEA (xxtea) algorithm
  *
@@ -243,7 +266,7 @@ const encrypt = (plaintext, password) =>{
  */
 const decrypt = (ciphertext, password) =>{
     if (ciphertext.length == 0) return ('');
-    let v = Tea.strToLongs(Base64.decode(ciphertext));
+    let v = Tea.strToLongs(hexDecode(ciphertext));
     let k = Tea.strToLongs(Utf8.encode(password).slice(0, 16));
     let n = v.length;
 
@@ -269,7 +292,7 @@ const decrypt = (ciphertext, password) =>{
 
     return Utf8.decode(plaintext);
 }
-//console.info(decrypt("Q+r2IDJ00JAdP8oJNM/q3sfcRlKi3mTRZ9XCiLqCnuM=","test"));
+console.info(decrypt("0014004d00e300e300e9004f00450013005400e60065009200fd003e00fd006a","test"));
 module.exports = {
     encrypt,
     decrypt
